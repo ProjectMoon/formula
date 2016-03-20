@@ -1,6 +1,7 @@
 require 'set'
 require 'elo'
 require 'ohm'
+require 'ohm/contrib'
 
 # TODO set up redis connection
 
@@ -10,53 +11,79 @@ class Racer < Ohm::Model
   attribute :name
   attribute :elo_rating
   index :name
-end
 
-class RaceResult < Ohm::Model
-  reference :racer, :Racer
-  attribute :status
-  attribute :points, lambda { |p| p.to_i }
-  reference :race, :Race
-
-  def <=>(other)
-    # for points, we want to maximize, not minimize.
-    other.points <=> self.points
+  # Create a new racer with the default Elo rating if the rating is
+  # not specified.
+  def self.create(**args)
+    args[:elo_rating] = DEFAULT_RATING if !args.has_key?(:elo_rating)
+    super(args)
   end
 end
 
-class Race < Ohm::Model
-  attr_reader :standings
-  collection :results, :RaceResult
+class RaceResult < Ohm::Model
+  include Ohm::DataTypes
+  reference :racer, :Racer
+  attribute :status
+  attribute :places, Type::Array
+  attribute :highest_place, Type::Integer
+  attribute :points, Type::Integer
 
   # Point scores used in a 10 car race. With less players, only higher
   # values are used. This is OK since the points are used to determine
   # the place for inputs into the Elo system.
   SCORES = [ 25, 18, 15, 12, 10, 8, 6, 4, 2, 1 ]
 
-  def standings()
-    if @standings.nil?
-      @standings = SortedSet.new(self.results)
-    end
+  # Overridden version of create to calculate highest place and points
+  # before insert. Also allows the convenience of specifying the place
+  # as a single number if it's not passed in as an array.
+  def self.create(**args)
+    args[:places] = [ args[:places] ] if !args[:places].is_a? Array
+    args[:points] = args[:places].inject(0) { |pts, place| pts += SCORES[place - 1] }
+    args[:highest_place] = args[:places].min
+    super(args)
+  end
 
-    @standings
+  # Determine the standing of a racer in the race based on others. If
+  # the racer is tied with another (possible when controlling multiple
+  # cars), the highest place is used as a tiebreaker.
+  def <=>(other)
+    if self.points == other.points
+      # for place, we want to minimize (lower is better).
+      self.highest_place <=> other.highest_place
+    else
+      # for points, we want to maximize, not minimize.
+      other.points <=> self.points
+    end
+  end
+end
+
+class Race < Ohm::Model
+  attr_reader :standings
+  attr_reader :racers
+  set :results, :RaceResult
+
+  def standings()
+    results.sort_by :points, :order => "DESC"
+  end
+
+  def racers()
+    results.sort().map { |result| result.racer }
   end
 
   def <<(race_result)
-    @racers << race_result.racer
-    standing = Standing.new(race_result.racer, race_result.status, calculate_points(race_result.places))
-    @standings << standing
+    results << race_result
   end
 
   def [](i)
-    @racers[i]
+    results.sort()[i]
   end
 
-  def in_place(place)
-    @standings.to_a[place - 1].racer
+  def racer_in_place(place)
+    standings[place - 1].racer
   end
 
   def standings_not_eliminated
-    @standings.select { |standing| standing.racer.status != :eliminated }
+    standings.select { |standing| standing.racer.status != :eliminated }
   end
 
   # Make sure that the number of places defined on the players matches
@@ -68,26 +95,13 @@ class Race < Ohm::Model
     # TODO ... later
   end
 
-  # Calculate the points for the player in the race, determined by the
-  # placement of all the cars in the race controlled by that player.
-  def calculate_points(places)
-    places.inject(0) { |pts, place| pts += SCORES[place - 1] }
+  # Recursively save every entity in the race.
+  def save_all()
+    results.each do |result|
+      result.racer.save()
+      result.save()
+    end
+
+    save()
   end
 end
-
-race = Race.create
-jeff = Racer.create(name: 'jeff', elo_rating: 1500)
-res = RaceResult.create(race: race, racer: jeff, status: :finished, points: 25)
-jeff.save()
-res.save()
-race.save()
-
-# load er up
-
-r = Race[1]
-puts r.standings.to_a[0].racer.name
-r.results.each do |result|
-  puts result.points
-end
-
-# TODO fix the overloaded operators, make it easier to add people, update other code to work w/ these properties

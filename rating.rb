@@ -13,7 +13,7 @@ module Rating
   def self.get_groups(race)
     # qualifying_groups is the number of groups that are based on
     # points. group 7 is a special group for people eliminated.
-    num_players = race.racers.size
+    num_players = race.results.size
 
     # key is player, value is group number.
     groups = {}
@@ -32,7 +32,7 @@ module Rating
     end
 
     # first is always its own group
-    first_player = race.in_place(1)
+    first_player = race.racer_in_place(1)
     groups[first_player] = 1
     processed << first_player
 
@@ -55,7 +55,7 @@ module Rating
     last_target = 0
     upper_bound = num_players - single_groups
     for place in (2..upper_bound)
-      racer = race.in_place(place)
+      racer = race.racer_in_place(place)
       target = (place / 2).ceil
       if !processed.include?(racer)
         groups[racer] = target + 1
@@ -68,7 +68,7 @@ module Rating
     # players to figure out where they go, and increment.
     for place in (upper_bound)..num_players
       break if place > num_players
-      racer = race.in_place(place)
+      racer = race.racer_in_place(place)
       target = last_target
       last_target += 1
       if !processed.include?(racer)
@@ -81,10 +81,14 @@ module Rating
     groups.sort_by {|_player, group| group}
   end
 
-  # Given a list of player names (strings) in an array that represents
-  # their averaged place in a race, return a set of "duels" to be used
-  # as input into elo. Each duel has two players, each with their group
-  # as the determining factor for win/loss/draw.
+  # Calculate new elo ratings based on input race data. Racers are
+  # grouped according to the rules of the get_groups method. This
+  # method pairs each racer against each other and uses their group
+  # number to calculate elo rating. Lower-numbered groups win against
+  # higher-numbered groups, while the same group is a tie This method
+  # alters the racers' elo ratings. This method returns a hash where
+  # the keys are the racers and the values are the elo rating objects
+  # generated.
   def self.duel(race)
     groups = get_groups(race)
 
@@ -93,7 +97,7 @@ module Rating
     end
 
     Elo.configure do |config|
-      config.default_k_factor = race.racers.size
+      config.default_k_factor = race.results.size
       config.use_FIDE_settings = false
     end
 
@@ -117,9 +121,8 @@ module Rating
       end
     end
 
-    # update the ratings of all players in the race.
-    race.racers.each do |racer|
-      racer.elo_rating = ratings[racer].rating
+    ratings.each do |racer, elo|
+      racer.update(:elo_rating => elo.rating)
     end
 
     ratings
