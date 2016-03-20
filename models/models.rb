@@ -2,61 +2,43 @@ require 'set'
 require 'elo'
 require 'ohm'
 
+# TODO set up redis connection
 
-class Player
+class Racer < Ohm::Model
   DEFAULT_RATING = 1500
 
-  attr_accessor :name
-  attr_accessor :elo_rating
+  attribute :name
+  attribute :elo_rating
+  index :name
+end
 
-  def initialize(name, elo_rating = DEFAULT_RATING)
-    @name = name
-    @elo_rating = elo_rating
+class RaceResult < Ohm::Model
+  reference :racer, :Racer
+  attribute :status
+  attribute :points, lambda { |p| p.to_i }
+  reference :race, :Race
+
+  def <=>(other)
+    # for points, we want to maximize, not minimize.
+    other.points <=> self.points
   end
 end
 
-class RaceResult
-  attr_accessor :racer
-  attr_accessor :status
-  attr_accessor :places
+class Race < Ohm::Model
+  attr_reader :standings
+  collection :results, :RaceResult
 
-  def initialize(racer, status, *places)
-    @racer = racer
-    @status = status
-    @places = places
-  end
-end
-
-class Race
   # Point scores used in a 10 car race. With less players, only higher
   # values are used. This is OK since the points are used to determine
   # the place for inputs into the Elo system.
   SCORES = [ 25, 18, 15, 12, 10, 8, 6, 4, 2, 1 ]
 
-  # Internal class used to determine the overall placement of a player
-  # in the race, based on their scored points.
-  Standing = Struct.new(:racer, :status, :points) do
-    # Compare method to determine ranking. If for some reason the
-    # players have the same number of points, then the highest place
-    # is used as a tie breaker.
-    def <=>(other)
-      if self.points == other.points
-        # in this case we want to minimize, since lower number = higher place.
-        @racer.highest_place <=> other.racer.highest_place
-      else
-        # for points, we want to maximize, not minimize.
-        other.points <=> self.points
-      end
+  def standings()
+    if @standings.nil?
+      @standings = SortedSet.new(self.results)
     end
-  end
 
-  # TODO stuff like name, track, number, etc
-  attr_accessor :racers
-  attr_reader :standings
-
-  def initialize()
-    @racers = []
-    @standings = SortedSet.new
+    @standings
   end
 
   def <<(race_result)
@@ -92,3 +74,20 @@ class Race
     places.inject(0) { |pts, place| pts += SCORES[place - 1] }
   end
 end
+
+race = Race.create
+jeff = Racer.create(name: 'jeff', elo_rating: 1500)
+res = RaceResult.create(race: race, racer: jeff, status: :finished, points: 25)
+jeff.save()
+res.save()
+race.save()
+
+# load er up
+
+r = Race[1]
+puts r.standings.to_a[0].racer.name
+r.results.each do |result|
+  puts result.points
+end
+
+# TODO fix the overloaded operators, make it easier to add people, update other code to work w/ these properties
