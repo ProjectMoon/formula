@@ -3,13 +3,14 @@ require 'elo'
 require 'ohm'
 require 'ohm/contrib'
 
-# TODO set up redis connection
+# TODO models cannot be wrapped in a module at the moment.
 
 class Racer < Ohm::Model
   DEFAULT_RATING = 1500
 
   attribute :name
   attribute :elo_rating
+  collection :race_results, :RaceResult
   index :name
 
   # Create a new racer with the default Elo rating if the rating is
@@ -18,11 +19,24 @@ class Racer < Ohm::Model
     args[:elo_rating] = DEFAULT_RATING if !args.has_key?(:elo_rating)
     super(args)
   end
+
+  # def race_results()
+  #   RaceResult.find(:racer_id => self.id)
+  # end
+
+  def races()
+    race_results.map { |result| result.race }.uniq
+  end
+
+  def total_points
+    race_results.inject(0) { |pts, result| pts + result.points }
+  end
 end
 
 class RaceResult < Ohm::Model
   include Ohm::DataTypes
   reference :racer, :Racer
+  reference :race, :Race
   attribute :status
   attribute :places, Type::Array
   attribute :highest_place, Type::Integer
@@ -60,7 +74,7 @@ end
 class Race < Ohm::Model
   attr_reader :standings
   attr_reader :racers
-  set :results, :RaceResult
+  collection :results, :RaceResult
 
   def standings()
     results.sort_by :points, :order => "DESC"
@@ -71,7 +85,7 @@ class Race < Ohm::Model
   end
 
   def <<(race_result)
-    results << race_result
+    #results.(race_result)
   end
 
   def [](i)

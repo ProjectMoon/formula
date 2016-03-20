@@ -1,0 +1,18 @@
+Hi this is the racer table:
+
+<table class="table">
+    <tr>
+        <th>Name</th>
+        <th>Races</th>
+        <th>Total Points</th>
+        <th>Rating</th>
+    </tr>
+    <% racers.each do |racer| %>
+    <tr>
+        <td><%= racer.name %></td>
+        <td><%= racer.races.size %></td>
+        <td><%= racer.total_points %></td>
+        <td><%= racer.elo_rating %></td>
+    </tr>
+    <% end %>
+</table>

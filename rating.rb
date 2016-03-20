@@ -2,7 +2,7 @@
 #
 # business logic for rating players in a race.
 
-module Rating
+module FormulaE::Rating
   # Generate a list of hashes, each with two keys "player" and
   # "group". Player is the player object, while group is the grouping
   # to be used for Elo rating input. With 10 cars in the race, the first 9 places
@@ -89,7 +89,7 @@ module Rating
   # alters the racers' elo ratings. This method returns a hash where
   # the keys are the racers and the values are the elo rating objects
   # generated.
-  def self.duel(race)
+  def self.rank(race)
     groups = get_groups(race)
 
     ratings = Hash.new do |hash, racer|
