@@ -4,7 +4,6 @@
 </p>
 
 <% racers.each do |racer| %>
-    <a name="<%= racer.id %>"></a>
     <h3><%= racer.name %></h3>
 
     <table class="table">
@@ -22,7 +21,10 @@
         </tr>
         <% racer.cars.each do |car| %>
             <tr>
-                <td><%= car.name %></td>
+                <td>
+                    <a name="<%= car.id %>"></a>
+                    <%= car.name %>
+                </td>
                 <td><%= car.type.capitalize %></td>
                 <td><%= car.tire_wp %></td>
                 <td><%= car.brake_wp %></td>
@@ -30,8 +32,8 @@
                 <td><%= car.body_wp %></td>
                 <td><%= car.engine_wp %></td>
                 <td><%= car.road_handling_wp %></td>
-                <td><%= car.kers %></td>
-                <td><%= car.drs %></td>
+                <td><%= car.kers ? 'Yes' : 'No'%></td>
+                <td><%= car.drs ? 'Yes' : 'No'%></td>
             </tr>
         <% end %>
     </table>
