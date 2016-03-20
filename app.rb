@@ -36,8 +36,23 @@ module FormulaE::Web
 
     # Display the table of players and their ratings.
     get '/' do
-      puts "hello"
       erb :racer_table, :locals => { racers: Racer.all.sort_by(:elo_rating, :order => 'DESC') }
+    end
+
+    get '/races' do
+      erb :races, :locals => { races: Race.all }
+    end
+
+    get '/cars' do
+      erb :cars, :locals => { racers: Racer.all }
+    end
+
+    get '/secure/add_race' do
+      erb :add_race
+    end
+
+    post '/secure/add_race' do
+      # TODO add the race.
     end
   end
 end

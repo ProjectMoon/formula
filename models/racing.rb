@@ -11,6 +11,7 @@ class Racer < Ohm::Model
   attribute :name
   attribute :elo_rating
   collection :race_results, :RaceResult
+  collection :cars, :Car
   index :name
 
   # Create a new racer with the default Elo rating if the rating is
@@ -20,9 +21,9 @@ class Racer < Ohm::Model
     super(args)
   end
 
-  # def race_results()
-  #   RaceResult.find(:racer_id => self.id)
-  # end
+  def car(name)
+    cars.select { |car| car.name == name }.first
+  end
 
   def races()
     race_results.map { |result| result.race }.uniq
@@ -33,9 +34,48 @@ class Racer < Ohm::Model
   end
 end
 
+class Car < Ohm::Model
+  include Ohm::DataTypes
+
+  reference :racer, :Racer
+
+  attribute :name
+  attribute :type # basic, stock, custom
+
+  attribute :tire_wp, Type::Integer
+  attribute :brake_wp, Type::Integer
+  attribute :gearbox_wp, Type::Integer
+  attribute :body_wp, Type::Integer
+  attribute :engine_wp, Type::Integer
+  attribute :road_handling_wp, Type::Integer
+
+  attribute :kers, Type::Boolean
+  attribute :drs, Type::Boolean
+
+  index :name
+
+  # Creates a new entry for the basic car
+  def self.basic_car(racer)
+    self.create(
+      racer: racer,
+      name: 'Basic Car',
+      type: :basic,
+      tire_wp: -1,
+      brake_wp: -1,
+      gearbox_wp: -1,
+      body_wp: -1,
+      engine_wp: -1,
+      road_handling_wp: -1,
+      kers: false,
+      drs: false
+    )
+  end
+end
+
 class RaceResult < Ohm::Model
   include Ohm::DataTypes
   reference :racer, :Racer
+  reference :car, :Car
   reference :race, :Race
   attribute :status
   attribute :places, Type::Array

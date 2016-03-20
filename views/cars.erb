@@ -1,0 +1,38 @@
+<h1>Cars</h1>
+<p>
+    This page lists the cars each player has designed and is using during the current season.
+</p>
+
+<% racers.each do |racer| %>
+    <a name="<%= racer.id %>"></a>
+    <h3><%= racer.name %></h3>
+
+    <table class="table">
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Tire WP</th>
+            <th>Brake WP</th>
+            <th>Gearbox WP</th>
+            <th>Body WP</th>
+            <th>Engine WP</th>
+            <th>Road Handling WP</th>
+            <th>KERS</th>
+            <th>DRS</th>
+        </tr>
+        <% racer.cars.each do |car| %>
+            <tr>
+                <td><%= car.name %></td>
+                <td><%= car.type.capitalize %></td>
+                <td><%= car.tire_wp %></td>
+                <td><%= car.brake_wp %></td>
+                <td><%= car.gearbox_wp %></td>
+                <td><%= car.body_wp %></td>
+                <td><%= car.engine_wp %></td>
+                <td><%= car.road_handling_wp %></td>
+                <td><%= car.kers %></td>
+                <td><%= car.drs %></td>
+            </tr>
+        <% end %>
+    </table>
+<% end %>

@@ -1,0 +1,27 @@
+<% num = 1; races.each do |race| %>
+    <h1>Race #<%= num %></h1>
+
+    <table class="table">
+        <tr>
+            <th>Racer</th>
+            <th>Place(s)</th>
+            <th>Car</th>
+            <th>Status</th>
+            <th>Points</th>
+        </tr>
+
+        <% race.results.sort_by(:points, :order => 'DESC').each do |result| %>
+            <tr>
+                <td><%= result.racer.name %></td>
+                <td><%= result.places.join(', ') %></td>
+                <td>
+                    <a href="/cars#<%= result.racer.id %>">
+                        <%= result.car.name %>
+                    </a>
+                </td>
+                <td><%= result.status.capitalize %></td>
+                <td><%= result.points %></td>
+            </tr>
+        <% end %>
+    </table>
+<% num += 1; end %>
