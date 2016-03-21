@@ -3,3 +3,22 @@
     margin: 0 auto;
     max-width: 400px;
 }
+
+.fe-form-margin-bottom {
+    margin-bottom: 10px;
+}
+
+.fe-centered {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.form-inline .form-group{
+    margin-left: 0;
+    margin-right: 0;
+}
+
+/* Add race page */
+#laps {
+    width: 100px;
+}

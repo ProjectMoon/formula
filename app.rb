@@ -90,7 +90,7 @@ module FormulaE::Web
     end
 
     get '/secure/add_race' do
-      erb :add_race
+      erb :add_race, :locals => { racers: Racer.all }
     end
 
     post '/secure/add_race' do

@@ -1,0 +1,50 @@
+<div class="fe-centered">
+    <form class="form-horizontal" method="post" action="/secure/add_race">
+        <div class="form-group">
+            <label for="number" class="col-xs-2 control-label">Race Info</label>
+            <div class="col-xs-8">
+                <div class="form-inline">
+                    <div class="form-group">
+                        <input class="form-control" type="number" id="number" name="number" placeholder="Race #">
+                    </div>
+
+                    <div class="form-group">
+                        <input class="form-control" type="text" id="date" name="date" placeholder="Date">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="circuit" class="col-xs-2 control-label">Circuit</label>
+
+            <div class="col-xs-4">
+                <div class="form-inline">
+                    <div class="form-group">
+                        <select class="form-control">
+                            <option>Monaco</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <input class="form-control" type="number" name="laps" id="laps" placeholder="Laps">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <% for c in 1..10 %>
+                <label for="place<%= c%>" class="col-xs-2 fe-form-margin-bottom control-label">Place <%= c %></label>
+                <div class="col-xs-4">
+                    <select class="form-control fe-form-margin-bottom">
+                        <option selected>-</option>
+                        <% racers.each do |racer| %>
+                            <option value="<%= racer.id %>"><%= racer.name %></option>
+                        <% end %>
+                    </select>
+                </div>
+            <% end %>
+        </div>
+    </form>
+</div>
