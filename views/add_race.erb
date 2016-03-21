@@ -10,12 +10,32 @@
                 <input class="form-control" type="text" id="date" name="date" placeholder="Date">
             </div>
 
-            <label for="circuit" class="col-lg-2 control-label">Track</label>
+            <label for="circuit" class="col-lg-2 control-label">Circuit</label>
 
             <div class="col-lg-4">
-                <select class="form-control">
-                    <option>Monaco</option>
+                <select id="circuit" name="circuit" class="form-control">
+                    <option value="Monaco">Monaco</option>
+                    <option value="Race City">Race City</option>
                 </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Race Type</label>
+
+            <div class="col-xs-4">
+                <div class="radio radio-inline">
+                    <input type="radio" name="radio2" id="radio3" value="basic">
+                    <label for="radio3">Basic</label>
+                </div>
+                <div class="radio radio-inline">
+                    <input type="radio" name="radio2" id="radio4" value="advanced" checked>
+                    <label for="radio4">Advanced</label>
+                </div>
+                <div class="radio radio-inline">
+                    <input type="radio" name="radio2" id="radio5" value=" custom" disabled>
+                    <label for="radio4">Custom</label>
+                </div>
             </div>
         </div>
 
@@ -25,7 +45,7 @@
             <% end %>
             <label for="place<%= c%>" class="col-lg-2 fe-form-margin-bottom control-label">Place <%= c+1 %></label>
             <div class="col-lg-4">
-                <select class="form-control fe-form-margin-bottom">
+                <select id="place<%= c+1 %>" name="place<%= c+1 %>" class="form-control fe-form-margin-bottom">
                     <option selected>-</option>
                     <% racers.each do |racer| %>
                         <option value="<%= racer.id %>"><%= racer.name %></option>

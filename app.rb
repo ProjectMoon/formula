@@ -95,6 +95,9 @@ module FormulaE::Web
 
     post '/secure/add_race' do
       # TODO add the race.
+      # create race object
+      # create race result objects
+      # set car based on race type (and later selection on screen)
     end
 
     get '/logout' do
