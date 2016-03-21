@@ -18,4 +18,11 @@
     margin-right: 0;
 }
 
-/* Add race page */
+/* More space on stacked columns in mobile */
+@media (max-width: 768px) {
+
+    [class*="col-"]:not(:last-child) {
+	margin-bottom: 15px;
+    }
+
+}

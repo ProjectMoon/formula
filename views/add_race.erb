@@ -1,18 +1,18 @@
 <div class="fe-centered">
     <form class="form-horizontal" method="post" action="/secure/add_race">
         <div class="form-group">
-            <label for="number" class="col-xs-2 control-label">Race Info</label>
-            <div class="col-xs-3">
+            <label for="number" class="col-lg-2 control-label">Race Info</label>
+            <div class="col-lg-2">
                 <input class="form-control" type="number" id="number" name="number" placeholder="Race #">
             </div>
 
-            <div class="col-xs-3">
+            <div class="col-lg-2">
                 <input class="form-control" type="text" id="date" name="date" placeholder="Date">
             </div>
 
-            <label for="circuit" class="col-xs-2 control-label">Track</label>
+            <label for="circuit" class="col-lg-2 control-label">Track</label>
 
-            <div class="col-xs-2">
+            <div class="col-lg-4">
                 <select class="form-control">
                     <option>Monaco</option>
                 </select>
@@ -23,8 +23,8 @@
             <% if c % 2 == 0 %>
                 <div class="form-group">
             <% end %>
-            <label for="place<%= c%>" class="col-xs-2 fe-form-margin-bottom control-label">Place <%= c+1 %></label>
-            <div class="col-xs-4">
+            <label for="place<%= c%>" class="col-lg-2 fe-form-margin-bottom control-label">Place <%= c+1 %></label>
+            <div class="col-lg-4">
                 <select class="form-control fe-form-margin-bottom">
                     <option selected>-</option>
                     <% racers.each do |racer| %>
