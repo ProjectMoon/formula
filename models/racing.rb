@@ -70,6 +70,22 @@ class Car < Ohm::Model
       drs: false
     )
   end
+
+  def self.advanced_car(racer)
+    self.create(
+      racer: racer,
+      name: 'Advanced Car',
+      type: :advanced,
+      tire_wp: 6,
+      brake_wp: 3,
+      gearbox_wp: 3,
+      body_wp: 3,
+      engine_wp: 3,
+      road_handling_wp: 2,
+      kers: false,
+      drs: false
+    )
+  end
 end
 
 class RaceResult < Ohm::Model

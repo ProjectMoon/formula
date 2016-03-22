@@ -6,35 +6,37 @@
 <% racers.each do |racer| %>
     <h3><%= racer.name %></h3>
 
-    <table class="table">
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Tire WP</th>
-            <th>Brake WP</th>
-            <th>Gearbox WP</th>
-            <th>Body WP</th>
-            <th>Engine WP</th>
-            <th>Road Handling WP</th>
-            <th>KERS</th>
-            <th>DRS</th>
-        </tr>
-        <% racer.cars.each do |car| %>
+    <div class="table-responsive">
+        <table class="table">
             <tr>
-                <td>
-                    <a name="<%= car.id %>"></a>
-                    <%= car.name %>
-                </td>
-                <td><%= car.type.capitalize %></td>
-                <td><%= car.tire_wp %></td>
-                <td><%= car.brake_wp %></td>
-                <td><%= car.gearbox_wp %></td>
-                <td><%= car.body_wp %></td>
-                <td><%= car.engine_wp %></td>
-                <td><%= car.road_handling_wp %></td>
-                <td><%= car.kers ? 'Yes' : 'No'%></td>
-                <td><%= car.drs ? 'Yes' : 'No'%></td>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Tire WP</th>
+                <th>Brake WP</th>
+                <th>Gearbox WP</th>
+                <th>Body WP</th>
+                <th>Engine WP</th>
+                <th>Road Handling WP</th>
+                <th>KERS</th>
+                <th>DRS</th>
             </tr>
-        <% end %>
-    </table>
+            <% racer.cars.each do |car| %>
+                <tr>
+                    <td>
+                        <a name="<%= car.id %>"></a>
+                        <%= car.name %>
+                    </td>
+                    <td><%= car.type.capitalize %></td>
+                    <td><%= car.tire_wp %></td>
+                    <td><%= car.brake_wp %></td>
+                    <td><%= car.gearbox_wp %></td>
+                    <td><%= car.body_wp %></td>
+                    <td><%= car.engine_wp %></td>
+                    <td><%= car.road_handling_wp %></td>
+                    <td><%= car.kers ? 'Yes' : 'No'%></td>
+                    <td><%= car.drs ? 'Yes' : 'No'%></td>
+                </tr>
+            <% end %>
+        </table>
+    </div>
 <% end %>

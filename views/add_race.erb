@@ -3,19 +3,30 @@
         <div class="form-group">
             <label for="number" class="col-lg-2 control-label">Race Info</label>
             <div class="col-lg-2">
-                <input class="form-control" type="number" id="number" name="number" placeholder="Race #">
+                <input class="form-control" type="number" id="number"
+                       name="number" placeholder="Race #" value="<%= form.number %>">
             </div>
 
             <div class="col-lg-2">
-                <input class="form-control" type="text" id="date" name="date" placeholder="Date">
+                <input class="form-control" type="text" id="date"
+                       name="date" placeholder="Date" value="<%= form.date %>">
             </div>
 
             <label for="circuit" class="col-lg-2 control-label">Circuit</label>
 
             <div class="col-lg-4">
                 <select id="circuit" name="circuit" class="form-control">
-                    <option value="Monaco">Monaco</option>
-                    <option value="Race City">Race City</option>
+                    <% [ "Monaco", "Race City" ].each do |track_name| %>
+                        <% if form.circuit == track_name %>
+                            <option selected value="<%= track_name %>">
+                                <%= track_name%>
+                            </option>
+                        <% else %>
+                            <option value="<%= track_name %>">
+                                <%= track_name%>
+                            </option>
+                        <% end %>
+                    <% end %>
                 </select>
             </div>
         </div>
@@ -24,18 +35,16 @@
             <label class="col-lg-2 control-label">Race Type</label>
 
             <div class="col-lg-4">
-                <div class="radio radio-inline">
-                    <input type="radio" name="type" id="radio3" value="basic">
-                    <label for="radio3">Basic</label>
-                </div>
-                <div class="radio radio-inline">
-                    <input type="radio" name="type" id="radio4" value="advanced" checked>
-                    <label for="radio4">Advanced</label>
-                </div>
-                <div class="radio radio-inline">
-                    <input type="radio" name="type" id="radio5" value=" custom" disabled>
-                    <label for="radio4">Custom</label>
-                </div>
+                <% [ "Basic", "Advanced" ].each_with_index do |type, i| %>
+                    <div class="radio radio-inline">
+                        <% if !form.type.nil? && form.type.casecmp(type).zero? %>
+                            <input checked type="radio" name="type" id="radio<%= i %>" value="<%= type.downcase %>">
+                        <% else %>
+                            <input type="radio" name="type" id="radio<%= i %>" value="<%= type.downcase %>">
+                        <% end %>
+                        <label for="radio<%= i %>"><%= type %></label>
+                    </div>
+                <% end %>
             </div>
         </div>
 
@@ -46,16 +55,24 @@
             <label for="place<%= c%>" class="col-lg-2 fe-form-margin-bottom control-label">Place <%= c+1 %></label>
             <div class="col-lg-2">
                 <select id="place<%= c+1 %>" name="place<%= c+1 %>" class="form-control fe-form-margin-bottom">
-                    <option selected>-</option>
+                    <option value="-1" selected>-</option>
                     <% racers.each do |racer| %>
-                        <option value="<%= racer.id %>"><%= racer.name %></option>
+                        <% if !form.place(c+1).nil? && form.place(c+1).id == racer.id.to_i %>
+                            <option selected value="<%= racer.id %>"><%= racer.name %></option>
+                        <% else %>
+                            <option value="<%= racer.id %>"><%= racer.name %></option>
+                        <% end %>
                     <% end %>
                 </select>
             </div>
 
             <div class="col-lg-2">
                 <div class="checkbox checkbox-inline">
-                    <input type="checkbox" name="eliminated<%= c+1 %>" id="checkbox<%= c+1 %>">
+                    <% if !form.status(c+1).nil? && form.status(c+1) == :eliminated %>
+                        <input checked type="checkbox" name="eliminated<%= c+1 %>" value="true" id="checkbox<%= c+1 %>">
+                    <% else %>
+                        <input type="checkbox" name="eliminated<%= c+1 %>" value="true" id="checkbox<%= c+1 %>">
+                    <% end %>
                     <label for="checkbox<%= c+1 %>">
                         Eliminated
                     </label>
@@ -66,7 +83,6 @@
                 </div>
             <% end %>
         <% end %>
-
 
         <div class="form-group text-center">
             <button type="submit" class="btn btn-default">Add Race</button>

@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'bundler/setup'
+
+# Script to add a user to formula e
+
+module FormulaE end
+
+require_relative '../models/racing'
+require_relative '../models/users'
+
+user = User.create(email: ARGV[0], password: ARGV[1])
+
+puts "User #{user.email} created with password #{ARGV[1]}"

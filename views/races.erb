@@ -1,5 +1,5 @@
-<% num = 1; races.each do |race| %>
-    <h1>Race #<%= num %></h1>
+<% races.each do |race| %>
+    <h1>Race #<%= race.number %> (<%= race.date %>)</h1>
 
     <table class="table">
         <tr>
@@ -15,13 +15,15 @@
                 <td><%= result.racer.name %></td>
                 <td><%= result.places.join(', ') %></td>
                 <td>
-                    <a href="/cars#<%= result.car.id %>">
-                        <%= result.car.name %>
-                    </a>
+                    <% if !result.car.nil? %>
+                        <a href="/cars#<%= result.car.id %>">
+                            <%= result.car.name %>
+                        </a>
+                    <% end %>
                 </td>
                 <td><%= result.status.capitalize %></td>
                 <td><%= result.points %></td>
             </tr>
         <% end %>
     </table>
-<% num += 1; end %>
+<% end %>
