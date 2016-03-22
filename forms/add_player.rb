@@ -1,6 +1,8 @@
 require 'virtus'
 require 'active_model'
 
+require_relative './general'
+
 module FormulaE
   module Web
     module Forms
@@ -9,6 +11,7 @@ module FormulaE
       class AddPlayerForm
         include Virtus.model
         include ActiveModel::Validations
+        include ConstructorGuard
 
         attribute :name, String
 

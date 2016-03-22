@@ -1,9 +1,12 @@
 require 'virtus'
 require 'active_model'
 
+require_relative './general'
+
 module FormulaE
   module Web
     module Forms
+
       # Coerce the eliminated status in the checkbox on the form.
       class EliminatedCoercion < Virtus::Attribute
         def coerce(value)
@@ -18,11 +21,12 @@ module FormulaE
       # We only allow certain symbols for the race type.
       class TypeSymbol < Virtus::Attribute
         def coerce(value)
-          puts "value is '#{value}'"
-          return :basic if value == "basic"
-          return :advanced if value == "advanced"
-          return :custom if value == "custom"
-          nil
+          case value
+          when "basic"; :basic
+          when "advanced"; :advanced
+          when "custom"; :custom
+          else nil
+          end
         end
       end
 
@@ -46,6 +50,7 @@ module FormulaE
       class AddRaceForm
         include Virtus.model
         include ActiveModel::Validations
+        include ConstructorGuard
 
         attribute :number, Integer
         attribute :date, String

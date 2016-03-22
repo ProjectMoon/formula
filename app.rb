@@ -3,6 +3,7 @@ require 'bundler/setup'
 require 'sinatra'
 require 'shield'
 require 'erubis'
+require 'tilt/erubis'
 
 require_relative './models/racing'
 require_relative './models/users'
@@ -24,7 +25,7 @@ module FormulaE::Web
   class WebApp < Sinatra::Application
     configure do
       enable :sessions
-      set :erubis, :escape_html => true
+      set :erb, :escape_html => true
     end
 
     helpers Shield::Helpers
@@ -78,19 +79,19 @@ module FormulaE::Web
 
     # Display the table of players and their ratings.
     get '/' do
-      erubis :racer_table, :locals => { racers: Racer.all.sort_by(:elo_rating, :order => 'DESC') }
+      erb :racer_table, :locals => { racers: Racer.all.sort_by(:elo_rating, :order => 'DESC') }
     end
 
     get '/races' do
-      erubis :races, :locals => { races: Race.all }
+      erb :races, :locals => { races: Race.all }
     end
 
     get '/cars' do
-      erubis :cars, :locals => { racers: Racer.all }
+      erb :cars, :locals => { racers: Racer.all }
     end
 
     get '/login' do
-      erubis :login
+      erb :login
     end
 
     post '/login' do
@@ -105,7 +106,7 @@ module FormulaE::Web
 
     get '/secure/add_player' do
       session[:form] = FormulaE::Web::Forms::AddPlayerForm.new
-      erubis :add_player, :locals => { form: session[:form] }
+      erb :add_player, :locals => { form: session[:form] }
     end
 
     post '/secure/add_player' do
@@ -117,13 +118,13 @@ module FormulaE::Web
         redirect('/')
       else
         set_error_message form.errors.full_messages
-        erubis :add_race, :locals => { form: session[:form] }
+        erb :add_player, :locals => { form: session[:form] }
       end
     end
 
     get '/secure/add_race' do
       session[:form] = FormulaE::Web::Forms::AddRaceForm.new
-      erubis :add_race, :locals => { form: session[:form], racers: Racer.all }
+      erb :add_race, :locals => { form: session[:form], racers: Racer.all }
     end
 
     post '/secure/add_race' do
@@ -135,17 +136,17 @@ module FormulaE::Web
         redirect('/')
       else
         set_error_message form.errors.full_messages
-        erubis :add_race, :locals => { form: session[:form], racers: Racer.all }
+        erb :add_race, :locals => { form: session[:form], racers: Racer.all }
       end
     end
 
     get '/secure/recalculate' do
-      erubis :recalculate
+      erb :recalculate
     end
 
     post '/secure/recalculate' do
       FormulaE::Services::Rating.recalculate()
-      erubis :recalculate_successful
+      erb :recalculate_successful
     end
 
     get '/logout' do
