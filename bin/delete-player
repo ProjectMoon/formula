@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+require_relative '../services/player_service'
+
+service = FormulaE::Services::PlayerService.new
+service.delete_player(ARGV[0])

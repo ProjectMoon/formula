@@ -8,8 +8,10 @@ require_relative './models/racing'
 require_relative './models/users'
 
 require_relative './forms/add_race'
+require_relative './forms/add_player'
 
 require_relative './services/races'
+require_relative './services/player_service'
 
 module FormulaE end
 
@@ -101,6 +103,24 @@ module FormulaE::Web
       end
     end
 
+    get '/secure/add_player' do
+      session[:form] = FormulaE::Web::Forms::AddPlayerForm.new
+      erubis :add_player, :locals => { form: session[:form] }
+    end
+
+    post '/secure/add_player' do
+      form = FormulaE::Web::Forms::AddPlayerForm.new(params)
+      session[:form] = form
+      if form.valid?
+        service = FormulaE::Services::PlayerService.new
+        service.add_player(form)
+        redirect('/')
+      else
+        set_error_message form.errors.full_messages
+        erubis :add_race, :locals => { form: session[:form] }
+      end
+    end
+
     get '/secure/add_race' do
       session[:form] = FormulaE::Web::Forms::AddRaceForm.new
       erubis :add_race, :locals => { form: session[:form], racers: Racer.all }
@@ -117,6 +137,15 @@ module FormulaE::Web
         set_error_message form.errors.full_messages
         erubis :add_race, :locals => { form: session[:form], racers: Racer.all }
       end
+    end
+
+    get '/secure/recalculate' do
+      erubis :recalculate
+    end
+
+    post '/secure/recalculate' do
+      FormulaE::Services::Rating.recalculate()
+      erubis :recalculate_successful
     end
 
     get '/logout' do
