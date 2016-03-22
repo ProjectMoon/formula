@@ -6,10 +6,13 @@ require 'shield'
 require_relative './models/racing'
 require_relative './models/users'
 
+require_relative './services/races'
+
 module FormulaE end
 
 module FormulaE::Web
-  # module imports
+  # module imports (currently, these do nothing because the models are
+  # not in a module).
   User ||= FormulaE::Models::User
   Racer ||= FormulaE::Models::Racer
 
@@ -78,8 +81,6 @@ module FormulaE::Web
     end
 
     post '/login' do
-      puts "hello"
-      puts params
       if login(User, params[:email], params[:password])
         remember(user) if params[:remember]
         redirect('/')
@@ -94,10 +95,20 @@ module FormulaE::Web
     end
 
     post '/secure/add_race' do
+      form = FormulaE::Web::Services::AddRaceForm.new(params)
+      puts form.places
+      puts form.number
+      puts form.date
+      puts form.type
+      puts form.circuit
+
+      service = FormulaE::Web::Services::RaceService.new
+      service.add_race(form)
       # TODO add the race.
       # create race object
       # create race result objects
       # set car based on race type (and later selection on screen)
+      # turn params into domain objects here, pass them to business layer
     end
 
     get '/logout' do

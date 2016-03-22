@@ -112,9 +112,17 @@ class RaceResult < Ohm::Model
 end
 
 class Race < Ohm::Model
+  include Ohm::DataTypes
+
+  attribute :number, Type::Integer
+  attribute :date
+  attribute :type
+  attribute :circuit
+  collection :results, :RaceResult
+
   attr_reader :standings
   attr_reader :racers
-  collection :results, :RaceResult
+
 
   def standings()
     results.sort_by :points, :order => "DESC"
