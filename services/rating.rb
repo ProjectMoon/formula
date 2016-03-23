@@ -97,11 +97,16 @@ module FormulaE
         groups = get_groups(race)
 
         ratings = Hash.new do |hash, racer|
-          hash[racer] = Elo::Player.new(:rating => racer.elo_rating)
+          # apply k-factor rules to the player directly, as the
+          # configure block gets weird when it's called multiple times
+          # over the life of the application.
+
+          # for now, we simply use the number of racers as the k-factor.
+          k_factor = race.results.size
+          hash[racer] = Elo::Player.new(k_factor: k_factor, rating: racer.elo_rating)
         end
 
         Elo.configure do |config|
-          config.default_k_factor = race.results.size
           config.use_FIDE_settings = false
         end
 

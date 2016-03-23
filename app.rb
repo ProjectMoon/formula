@@ -90,6 +90,10 @@ module FormulaE::Web
       erb :cars, :locals => { racers: Racer.all }
     end
 
+    get '/rules' do
+      erb :rules
+    end
+
     get '/login' do
       erb :login
     end
