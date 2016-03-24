@@ -109,38 +109,47 @@ module FormulaE::Web
     end
 
     get '/secure/add_player' do
-      session[:form] = FormulaE::Web::Forms::AddPlayerForm.new
-      erb :add_player, :locals => { form: session[:form] }
+      @form = FormulaE::Web::Forms::AddPlayerForm.new
+      erb :add_player
     end
 
     post '/secure/add_player' do
-      form = FormulaE::Web::Forms::AddPlayerForm.new(params)
-      session[:form] = form
-      if form.valid?
+      @form = FormulaE::Web::Forms::AddPlayerForm.new(params)
+      if @form.valid?
         service = FormulaE::Services::PlayerService.new
-        service.add_player(form)
-        redirect('/')
+        result = service.add_player(@form)
+        if result.success?
+          redirect('/') if result.success?
+        else
+          set_error_message result.errors
+          erb :add_player
+        end
       else
-        set_error_message form.errors.full_messages
-        erb :add_player, :locals => { form: session[:form] }
+        set_error_message @form.errors.full_messages
+        erb :add_player
       end
     end
 
     get '/secure/add_race' do
-      session[:form] = FormulaE::Web::Forms::AddRaceForm.new
-      erb :add_race, :locals => { form: session[:form], racers: Racer.all }
+      @form = FormulaE::Web::Forms::AddRaceForm.new
+      erb :add_race, :locals => { racers: Racer.all }
     end
 
     post '/secure/add_race' do
-      form = FormulaE::Web::Forms::AddRaceForm.new(params)
-      session[:form] = form
-      if form.valid?
+      @form = FormulaE::Web::Forms::AddRaceForm.new(params)
+      if @form.valid?
         service = FormulaE::Services::RaceService.new
-        service.add_race(form)
-        redirect('/')
+        result = service.add_race(@form)
+
+        if result.success?
+          redirect('/')
+        else
+          set_error_message result.errors
+          erb :add_race, :locals => { racers: Racer.all }
+        end
       else
-        set_error_message form.errors.full_messages
-        erb :add_race, :locals => { form: session[:form], racers: Racer.all }
+        set_error_message @form.errors.full_messages
+        erb :add_race, :locals => { racers: Racer.all }
       end
     end
 

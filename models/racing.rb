@@ -136,9 +136,10 @@ class Race < Ohm::Model
   attribute :circuit
   collection :results, :RaceResult
 
+  unique :number
+
   attr_reader :standings
   attr_reader :racers
-
 
   def standings()
     results.sort_by :points, :order => "DESC"

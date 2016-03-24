@@ -2,6 +2,7 @@ require 'virtus'
 require 'active_model'
 
 require_relative './general'
+require_relative '../models/racing'
 
 module FormulaE
   module Web
@@ -66,6 +67,18 @@ module FormulaE
         validates :number, :date, :type, :circuit, presence: true
 
         validate do |form|
+          # make sure at least one racer is in the list.
+          racer_present = false
+
+          10.times do |num|
+            if !self.place(num+1).nil?
+              racer_present = true
+              break
+            end
+          end
+
+          errors.add(:place1, "No racer selected") if !racer_present
+
           # make sure that the places are contiguous, i.e. the
           # previous place (minus 1st) should always have a value if
           # the current place has a racer.

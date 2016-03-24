@@ -2,4 +2,9 @@
 require_relative '../services/player_service'
 
 service = FormulaE::Services::PlayerService.new
-service.delete_player(ARGV[0])
+result = service.delete_player(ARGV[0])
+
+if !result.success?
+  result.errors.each { |e| puts e }
+  exit 1
+end

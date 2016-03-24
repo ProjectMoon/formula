@@ -1,4 +1,5 @@
 require_relative '../models/racing'
+require_relative './result'
 
 module FormulaE
   module Services
@@ -11,8 +12,9 @@ module FormulaE
           racer = Racer.create(name: player_form.name)
           Car.basic_car(racer)
           Car.advanced_car(racer)
+          ServiceResult.new(true)
         else
-          raise "Player #{player_form.name} already exists!"
+          ServiceResult.new(false, "Player #{player_form.name} already exists!")
         end
       end
 
@@ -21,8 +23,9 @@ module FormulaE
 
         if !racer.nil?
           racer.delete
+          ServiceResult.new(true)
         else
-          raise "No racer named #{name}"
+          ServiceResult.new(false, "No racer named #{name}")
         end
       end
     end
