@@ -6,10 +6,11 @@ require 'ohm/contrib'
 # TODO models cannot be wrapped in a module at the moment.
 
 class Racer < Ohm::Model
-  DEFAULT_RATING = 1500
+  include Ohm::DataTypes
+  DEFAULT_RATING = 1000
 
   attribute :name
-  attribute :elo_rating
+  attribute :elo_rating, Type::Float
   collection :race_results, :RaceResult
   collection :cars, :Car
   index :name
@@ -31,6 +32,14 @@ class Racer < Ohm::Model
 
   def total_points
     race_results.inject(0) { |pts, result| pts + result.points }
+  end
+
+  # The elo rating expressed as thousands and turned into an
+  # integer. The elo rating is stored internally as a hundreds-place
+  # number, and there is a lot of variation found in the decimal. This
+  # expresses it in a whole number that makes more sense to humans.
+  def human_elo_rating
+    (elo_rating * 1).round(1)
   end
 end
 
