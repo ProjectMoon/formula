@@ -2,5 +2,7 @@ stuff to do:
  - add seasons
  - add car design
  - add constructor scoring
- - add dumping of data out of redis
- p
+
+working on starting/finishing races:
+ - start race "works", but does not seem to store the starts
+ - finish race is not properly recording the place data from the form in the places method.

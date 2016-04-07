@@ -52,12 +52,12 @@
             <% if c % 2 == 0 %>
                 <div class="form-group">
             <% end %>
-            <label for="place<%= c%>" class="col-lg-2 fe-form-margin-bottom control-label">Place <%= c+1 %></label>
-            <div class="col-lg-2">
-                <select id="place<%= c+1 %>" name="place<%= c+1 %>" class="form-control fe-form-margin-bottom">
+            <label for="start<%= c%>" class="col-lg-2 fe-form-margin-bottom control-label">Position <%= c+1 %></label>
+            <div class="col-lg-4">
+                <select id="start<%= c+1 %>" name="start<%= c+1 %>" class="form-control fe-form-margin-bottom">
                     <option value="-1" selected>-</option>
                     <% racers.each do |racer| %>
-                        <% if !@form.place(c+1).nil? && @form.place(c+1).id == racer.id.to_i %>
+                        <% if !@form.position(c+1).nil? && @form.position(c+1).id == racer.id.to_i %>
                             <option selected value="<%= racer.id %>"><%= racer.name %></option>
                         <% else %>
                             <option value="<%= racer.id %>"><%= racer.name %></option>
@@ -66,26 +66,13 @@
                 </select>
             </div>
 
-            <div class="col-lg-2">
-                <div class="checkbox checkbox-inline">
-                    <% if !@form.status(c+1).nil? && @form.status(c+1) == :eliminated %>
-                        <input checked type="checkbox" name="eliminated<%= c+1 %>" value="true" id="checkbox<%= c+1 %>">
-                    <% else %>
-                        <input type="checkbox" name="eliminated<%= c+1 %>" value="true" id="checkbox<%= c+1 %>">
-                    <% end %>
-                    <label for="checkbox<%= c+1 %>">
-                        Eliminated
-                    </label>
-                </div>
-            </div>
-
             <% if c % 2 != 0 %>
                 </div>
             <% end %>
         <% end %>
 
         <div class="form-group text-center">
-            <button type="submit" class="btn btn-default">Add Race</button>
+            <button type="submit" class="btn btn-default">Start Race</button>
         </div>
     </form>
 </div>

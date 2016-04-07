@@ -88,6 +88,22 @@ class Car < Ohm::Model
   end
 end
 
+# RaceBeginning is a model for the start of a race for a single racer.
+class RaceBeginning < Ohm::Model
+  include Ohm::DataTypes
+
+  reference :racer, :Racer
+  reference :race, :Race
+  attribute :grid_positions, Type::Array
+
+  # Overridden version of create to coerce grid positions to array if
+  # only a single one is specified.
+  def self.create(**args)
+    args[:grid_positions] = [ args[:grid_positions] ] if !args[:grid_positions].is_a? Array
+    super(args)
+  end
+end
+
 class RaceResult < Ohm::Model
   include Ohm::DataTypes
   reference :racer, :Racer
@@ -97,6 +113,7 @@ class RaceResult < Ohm::Model
   attribute :places, Type::Array
   attribute :highest_place, Type::Integer
   attribute :points, Type::Integer
+  attribute :grid_movement, Type::Integer
 
   # Point scores used in a 10 car race. With less players, only higher
   # values are used. This is OK since the points are used to determine
@@ -133,13 +150,13 @@ class Race < Ohm::Model
   attribute :number, Type::Integer
   attribute :date
   attribute :type
+  attribute :status # :started, :finished
   attribute :circuit
   collection :results, :RaceResult
+  collection :starts, :RaceBeginning
 
   unique :number
-
-  attr_reader :standings
-  attr_reader :racers
+  index :status
 
   def standings()
     results.sort_by :points, :order => "DESC"

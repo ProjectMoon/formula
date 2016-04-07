@@ -8,17 +8,6 @@ module FormulaE
   module Web
     module Forms
 
-      # Coerce the eliminated status in the checkbox on the form.
-      class EliminatedCoercion < Virtus::Attribute
-        def coerce(value)
-          if value == "true"
-            :eliminated
-          else
-            :finished
-          end
-        end
-      end
-
       # We only allow certain symbols for the race type.
       class TypeSymbol < Virtus::Attribute
         def coerce(value)
@@ -41,9 +30,9 @@ module FormulaE
             rescue ArgumentError
               nil
             end
-
-            Racer[value]
           end
+
+          Racer[value]
         end
       end
 
@@ -58,10 +47,9 @@ module FormulaE
         attribute :type, TypeSymbol
         attribute :circuit, String
 
-        # race places
+        # race start positions
         10.times do |num|
-          attribute "place#{num + 1}".to_sym, RacerCoercion
-          attribute "eliminated#{num + 1}".to_sym, EliminatedCoercion
+          attribute "start#{num + 1}".to_sym, RacerCoercion
         end
 
         validates :number, :date, :type, :circuit, presence: true
@@ -71,13 +59,13 @@ module FormulaE
           racer_present = false
 
           10.times do |num|
-            if !self.place(num+1).nil?
+            if !self.position(num+1).nil?
               racer_present = true
               break
             end
           end
 
-          errors.add(:place1, "No racer selected") if !racer_present
+          errors.add(:start1, "No racer selected") if !racer_present
 
           # make sure that the places are contiguous, i.e. the
           # previous place (minus 1st) should always have a value if
@@ -85,40 +73,33 @@ module FormulaE
           10.times do |num|
             place = num + 1
             next if place <= 1
-            curr_racer = self.public_send("place#{place}")
+            curr_racer = self.public_send("start#{place}")
 
             if curr_racer != nil
-              prev_racer = self.public_send("place#{place - 1}")
+              prev_racer = self.public_send("start#{place - 1}")
               if prev_racer.nil?
-                errors.add "place#{place - 1}".to_sym, "Place is missing."
+                errors.add "start#{place - 1}".to_sym, "Grid position is missing."
               end
             end
           end
         end
 
-        # Convenience method to get the racer at a place.
-        def place(num)
-          self.public_send("place#{num}")
+        # Convenience method to get the racer at a position.
+        def position(num)
+          self.public_send("start#{num}")
         end
 
-        # Convenience method to get the status of a racer at a place.
-        def status(num)
-          self.public_send("eliminated#{num}")
-        end
+        # Assemble a hash of racers as keys, with the grid positions
+        # as the value.
+        def grid_positions
+          hsh = Hash.new([])
 
-        # Assemble a hash of places as keys, with the racer ID and
-        # their finishing status as values.
-        def places
-          hsh = {}
           10.times do |num|
             place = num + 1
-            racer = self.public_send("place#{place}")
+            racer = self.position(place)
 
             if !racer.nil?
-              hsh[place] = {
-                racer: racer,
-                status: self.public_send("eliminated#{place}")
-              }
+              hsh[racer] << place
             end
           end
 

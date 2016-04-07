@@ -9,7 +9,7 @@ module FormulaE
     # manipuation of races.
     class RaceService
       def add_race(race_form)
-        race = Race.new(number: race_form.number, date: race_form.date,
+        race = Race.new(number: race_form.number, date: race_form.date, status: :started,
                         type: race_form.type, circuit: race_form.circuit)
 
         begin
@@ -19,27 +19,29 @@ module FormulaE
         end
 
         if saved
-          race_form.places.each do |place, racer_info|
-            racer = racer_info[:racer]
-
+          race_form.grid_positions.each do |racer, positions|
             if !racer.nil?
-              case race_form.type
-              when :advanced
-                car = racer.car('Advanced Car')
-              when :basic
-                car = racer.car('Basic Car')
-              end
-
-              RaceResult.create(car: car, race: race, racer: racer,
-                                status: racer_info[:status], places: place)
+              # add or update a RaceBeginning
+              RaceBeginning.create(race: race, racer: racer, grid_positions: positions)
             end
           end
 
           race.save_all
-          Rating.rank(race)
           ServiceResult.new(true)
         else
           ServiceResult.new(false, 'Unable to create race.')
+        end
+      end
+
+      def finish_race(race_form)
+        if !race_form.race.nil?
+          race_form.places.each do |racer, places_and_statuses|
+            puts "#{racer.name}: #{places_and_statuses}"
+          end
+
+          ServiceResult.new(true)
+        else
+          ServiceResult.new(false, 'Race not found')
         end
       end
     end

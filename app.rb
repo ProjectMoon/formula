@@ -9,6 +9,7 @@ require_relative './models/racing'
 require_relative './models/users'
 
 require_relative './forms/add_race'
+require_relative './forms/finish_race'
 require_relative './forms/add_player'
 
 require_relative './services/races'
@@ -150,6 +151,29 @@ module FormulaE::Web
       else
         set_error_message @form.errors.full_messages
         erb :add_race, :locals => { racers: Racer.all }
+      end
+    end
+
+    get '/secure/finish_race' do
+      @form = FormulaE::Web::Forms::FinishRaceForm.new
+      erb :finish_race, :locals => { racers: Racer.all, started_races: Race.find(status: :started) }
+    end
+
+    post '/secure/finish_race' do
+      @form = FormulaE::Web::Forms::FinishRaceForm.new(params)
+      if @form.valid?
+        service = FormulaE::Services::RaceService.new
+        result = service.finish_race(@form)
+
+        if result.success?
+          redirect('/')
+        else
+          set_error_message result.errors
+          erb :finish_race, :locals => { racers: Racer.all, started_races: Race.find(status: :started) }
+        end
+      else
+        set_error_message @form.errors.full_messages
+        erb :finish_race, :locals => { racers: Racer.all, started_races: Race.find(status: :started) }
       end
     end
 

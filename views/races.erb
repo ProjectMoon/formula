@@ -1,5 +1,5 @@
 <% races.each do |race| %>
-    <h1>Race #<%= race.number %> (<%= race.date %>)</h1>
+    <h1>Race #<%= race.number %> (<%= race.date %>; <%= race.status.to_s.capitalize %>)</h1>
 
     <table class="table">
         <tr>

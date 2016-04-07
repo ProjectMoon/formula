@@ -8,7 +8,9 @@ module FormulaE
         def initialize(*args)
           if args.size > 0
             args[0].each_key do |key, value|
-              raise ArgumentError, key unless respond_to?("#{key}=")
+              unless respond_to?("#{key.to_s}=")
+                raise ArgumentError, "#{self.class.name.split('::').last} does not respond to '#{key}'"
+              end
             end
 
             super(*args)
